@@ -1,0 +1,67 @@
+.my-feed {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #FFF;
+  gap: 2rem;
+  padding: 20px;
+  scroll-behavior: smooth;
+
+  .post-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 300px;
+    min-height: 100px;
+    max-width: 400px;
+    max-height: 700px;
+    height: auto;
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+
+    .date-posted {
+      font-size: 9px;
+      margin: 2px 5px;
+      color: var(--gray);
+    }
+
+    .post-text {
+      padding: 15px;
+      max-height: 250px;
+      height: auto;
+    }
+
+    .post-media {
+      min-height: none;
+      max-height: 450px;
+      height: auto;
+      width: 100%;
+
+      & img {
+        min-height: 250px;
+        height: auto;
+        width: 100%;
+        object-position: center;
+        object-fit: cover;
+      }
+    }
+
+    .post-interactions {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      color: #FFF;
+      min-height: 50px;
+      height: auto;
+      background: var(--black);
+      & i {
+        font-size: 23px;
+        cursor: pointer;
+        user-select: none;
+      }
+    }
+  }
+}
+
