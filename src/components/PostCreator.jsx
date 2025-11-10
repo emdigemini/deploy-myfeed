@@ -39,10 +39,6 @@ function CreatePost({ closeCreator, setCreatePost }){
     inputField.current.focus();
   }, []);
 
-  useEffect(() => {
-
-  })
-
   const removeFile = (index) => {
     setMediaFiles(prev => prev.filter((_, i) => i !== index));
   }
@@ -67,15 +63,14 @@ function CreatePost({ closeCreator, setCreatePost }){
         style={{fontSize: `${fontSize}px`}} aria-multiline="true"
         role="text-box" 
         contentEditable className="create-post_box empty">
-
+          
         </div>
         <div className="prev-media">
-          {urls.map((file, i) => {
-            const url = URL.createObjectURL(file);
+          {urls.map((url, i) => {
             return(
-              <div className="media" key={`${file.name}-${i}`}>
+              <div className="media" key={`${url.name}-${i}`}>
                 <i onClick={() => removeFile(i)} className="bi bi-x"></i>
-                <img className="file" src={url} alt={file.name} />
+                <img className="file" src={url} alt={url.name} />
               </div>
             )
           })}
@@ -91,9 +86,49 @@ function CreatePost({ closeCreator, setCreatePost }){
 function PostActions({ postText, setPostText, setCreatePost, fontSize, setFontSize }){
   const {mediaFiles, setMediaFiles} = useContext(MediaContext);
   const {postData, setPostData} = useContext(PostContext);
-  const fileInput = useRef(null);
 
-  
+  const fileToBase64 = async (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    })
+  }
+
+  const upload = async () => {
+    if(postText.replace(/\s/g, '').length === 0) return;
+    
+    const timestamp = Date.now();
+    const base64Files = 
+      await Promise.all(mediaFiles.map(file => fileToBase64(file)));
+
+    const newPost = 
+      {postText, fontSize, mediaFiles: base64Files, timestamp};
+    
+    const sortedData = [...postData, newPost].sort((a, b) => b.timestamp - a.timestamp);
+    setPostData(sortedData);
+    localStorage.setItem("postData", JSON.stringify(sortedData));
+    
+    setFontSize(14);
+    setPostText("");
+    setMediaFiles([]);
+    setCreatePost(false);
+  }
+
+  return (
+    <div className="post-actions">
+      <div className="post-extras">
+        <AddMedia setMediaFiles={setMediaFiles} />
+        <AdjustFontsize fontSize={fontSize} setFontSize={setFontSize} />
+      </div>
+      <button onClick={upload} className="submit-post">POST</button>
+    </div>
+  )
+}
+
+function AddMedia({ setMediaFiles }){
+  const fileInput = useRef(null);
 
   const handleFiles = (e) => {
     const files = Array.from(e.target.files);
@@ -101,66 +136,24 @@ function PostActions({ postText, setPostText, setCreatePost, fontSize, setFontSi
     e.target.value = "";
   }
 
-  const upload = () => {
-    if(postText.replace(/\s/g, '').length === 0) return;
-    
-    const timestamp = Date.now();
-
-    if(postData.length > 0){
-      const sortedData = [...postData, {
-        postText,
-        fontSize,
-        mediaFiles: [...mediaFiles],
-        timestamp
-      }].sort((a, b) => b.timestamp - a.timestamp);
-      setPostData(sortedData);
-      localStorage.setItem("postData", JSON.stringify(sortedData));
-    } else {
-      console.log('1st data');
-      setPostData(prev => {
-      const newData = [...prev,
-        {
-          postText,
-          fontSize,
-          mediaFiles: [...mediaFiles],
-          timestamp
-      }];
-      localStorage.setItem("postData", JSON.stringify(newData));
-      return newData;
-      });
-    }
-    
-    setFontSize(14);
-    setPostText("");
-    setCreatePost(false);
-    setMediaFiles([]);
-  }
-
   return (
-    <div className="post-actions">
-      <div className="post-extras">
-        <div className="add-media">
-          <button aria-label="Add photo" onClick={() => fileInput.current.click()} >
-            <i className="bi bi-image"></i>
-          </button>
-          <input
-            ref={fileInput}
-            onChange={handleFiles}
-            type="file"
-            id="fileInput"
-            accept="image"
-            multiple
-          />
-          <div className="media-label">
-            <p>Add a photo <br /> or a video</p>
-          </div>
-        </div>
-        <AdjustFontsize fontSize={fontSize} setFontSize={setFontSize} />
+    <div className="add-media">
+      <button aria-label="Add photo" onClick={() => fileInput.current.click()} >
+        <i className="bi bi-image"></i>
+      </button>
+      <input
+        ref={fileInput}
+        onChange={handleFiles}
+        type="file"
+        id="fileInput"
+        accept="image"
+        multiple
+      />
+      <div className="media-label">
+        <p>Add a photo <br /> or a video</p>
       </div>
-
-      <button onClick={upload} className="submit-post">POST</button>
     </div>
-  )
+  );
 }
 
 function AdjustFontsize({ fontSize, setFontSize }){
