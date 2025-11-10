@@ -4,37 +4,44 @@ import { MediaContext } from "./MediaContext";
 
 export function PostCreator(){
   const [createPost, setCreatePost] = useState(false);
-  const {mediaFiles, setMediaFiles} = useContext(MediaContext);
 
-  function postEditor(){
-    setCreatePost(true);
-  }
-
-  function postCreator(e){
-    if(mediaFiles.length > 0) return;
+  function closeCreator(e){
     if(e.target.classList.contains('create-post-overlay')) setCreatePost(false);
   }
 
   return (
     <>
-      {createPost && <CreatePost postCreator={postCreator} setCreatePost={setCreatePost} />}
-      <div onClick={postEditor} className="post-creator">
-        <div className="app-icon">
+      {createPost && <CreatePost closeCreator={closeCreator} setCreatePost={setCreatePost} />}
+      <div onClick={() => setCreatePost(true)} className="post-creator">
+        <button className="app-icon">
           <img src="icons/my-feed.svg" alt="My Feed" />
-        </div>
+        </button>
       </div>
     </>
   );
 }
 
-function CreatePost({postCreator, setCreatePost}){
+function CreatePost({ closeCreator, setCreatePost }){
   const {mediaFiles, setMediaFiles} = useContext(MediaContext);
+  const [urls, setUrls] = useState([]);
   const [postText, setPostText] = useState("");
+  const [fontSize, setFontSize] = useState(14);
   const inputField = useRef(null);
+
+  useEffect(() => {
+    const newUrls = mediaFiles.map(file => URL.createObjectURL(file));
+    setUrls(newUrls);
+
+    return () => newUrls.forEach(url => URL.revokeObjectURL(url));
+  }, [mediaFiles]);
 
   useEffect(() => {
     inputField.current.focus();
   }, []);
+
+  useEffect(() => {
+
+  })
 
   const removeFile = (index) => {
     setMediaFiles(prev => prev.filter((_, i) => i !== index));
@@ -43,7 +50,7 @@ function CreatePost({postCreator, setCreatePost}){
   const writePost = () => {
     const postField = inputField.current.textContent;
     setPostText(postField);
-    if(inputField && postField.length > 0){
+    if(postField.length > 0){
       inputField.current.classList.remove('empty');
     } else {
       inputField.current.classList.add('empty');
@@ -51,16 +58,19 @@ function CreatePost({postCreator, setCreatePost}){
   }
 
   return (
-    <div onClick={postCreator} className="create-post-overlay">
+    <div onClick={(e) => closeCreator(e)} className="create-post-overlay">
       <div className="create-post">
         <div className="create-post_header">
           <p>Anything goes</p>
         </div>
-        <div ref={inputField} onInput={writePost} contentEditable className="create-post_box empty">
+        <div ref={inputField} onInput={writePost} 
+        style={{fontSize: `${fontSize}px`}} aria-multiline="true"
+        role="text-box" 
+        contentEditable className="create-post_box empty">
 
         </div>
         <div className="prev-media">
-          {mediaFiles.map((file, i) => {
+          {urls.map((file, i) => {
             const url = URL.createObjectURL(file);
             return(
               <div className="media" key={`${file.name}-${i}`}>
@@ -70,37 +80,20 @@ function CreatePost({postCreator, setCreatePost}){
             )
           })}
         </div>
-        <PostActions postText={postText} setCreatePost={setCreatePost} />
+        <PostActions postText={postText} setPostText={setPostText}
+        setCreatePost={setCreatePost}
+         fontSize={fontSize} setFontSize={setFontSize} />
       </div>
     </div>
   )
 }
 
-function PostActions({postText, setCreatePost}){
+function PostActions({ postText, setPostText, setCreatePost, fontSize, setFontSize }){
   const {mediaFiles, setMediaFiles} = useContext(MediaContext);
   const {postData, setPostData} = useContext(PostContext);
   const fileInput = useRef(null);
 
-  const [fontSize, setFontSize] = useState(14);
-  const fontSizeField = useRef(null);
-
-  const inputSize = (e) => {
-    if(e.target.value > 64) e.target.value = 64;
-  }
-
-  const enterSize = (e) => {
-    if(e.key === 'Enter' && e.target.value !== ''){
-      adjustFontSize();
-    }
-  }
-
-  const adjustFontSize = () => {
-    const size = fontSizeField.current.value;
-    if(size > 7){
-      setFontSize(size);
-      document.documentElement.style.setProperty('--adjust_FontSize', `${size}px`);
-    }
-  }
+  
 
   const handleFiles = (e) => {
     const files = Array.from(e.target.files);
@@ -111,7 +104,7 @@ function PostActions({postText, setCreatePost}){
   const upload = () => {
     if(postText.replace(/\s/g, '').length === 0) return;
     
-    const timestamp = new Date();
+    const timestamp = Date.now();
 
     if(postData.length > 0){
       const sortedData = [...postData, {
@@ -138,14 +131,18 @@ function PostActions({postText, setCreatePost}){
     }
     
     setFontSize(14);
+    setPostText("");
     setCreatePost(false);
+    setMediaFiles([]);
   }
 
   return (
     <div className="post-actions">
       <div className="post-extras">
         <div className="add-media">
-          <i onClick={() => fileInput.current.click()} className="bi bi-image"></i>
+          <button aria-label="Add photo" onClick={() => fileInput.current.click()} >
+            <i className="bi bi-image"></i>
+          </button>
           <input
             ref={fileInput}
             onChange={handleFiles}
@@ -158,18 +155,43 @@ function PostActions({postText, setCreatePost}){
             <p>Add a photo <br /> or a video</p>
           </div>
         </div>
-        <div className="adjust-font-size">
-          <label htmlFor="adjFontSize">
-            Adjust font size
-          </label>
-          <div className="input-wrapper">
-            <button onClick={adjustFontSize}><i className="bi bi-fonts"></i></button>
-            <input ref={fontSizeField} onInput={inputSize} onKeyDown={enterSize} id="adjFontSize" type="number" placeholder={`${fontSize}px`} />
-          </div>
-        </div>
+        <AdjustFontsize fontSize={fontSize} setFontSize={setFontSize} />
       </div>
 
       <button onClick={upload} className="submit-post">POST</button>
+    </div>
+  )
+}
+
+function AdjustFontsize({ fontSize, setFontSize }){
+  const fontSizeField = useRef(null);
+
+  const inputSize = (e) => {
+    if(e.target.value > 64) e.target.value = 64;
+  }
+
+  const enterSize = (e) => {
+    if(e.key === 'Enter' && e.target.value !== ''){
+      adjustFontSize();
+    }
+  }
+
+  const adjustFontSize = () => {
+    const size = fontSizeField.current.value;
+    if(size > 7){
+      setFontSize(size);
+    }
+  }
+
+  return (
+    <div className="adjust-font-size">
+      <label htmlFor="adjFontSize">
+        Adjust font size
+      </label>
+      <div className="input-wrapper">
+        <button onClick={adjustFontSize}><i className="bi bi-fonts"></i></button>
+        <input ref={fontSizeField} onInput={inputSize} onKeyDown={enterSize} id="adjFontSize" type="number" placeholder={`${fontSize}px`} />
+      </div>
     </div>
   )
 }

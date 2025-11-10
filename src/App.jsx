@@ -13,8 +13,8 @@ function App() {
       <MediaProvider>
         <PostProvider>
           <Routes>
-            <Route path='/startup' element={<Startup />} />
-            <Route index element={<HomePage />} />
+            <Route path='/' element={<Startup />} />
+            <Route path="/myfeed" element={<HomePage />} />
           </Routes>
         </PostProvider>
       </MediaProvider>
