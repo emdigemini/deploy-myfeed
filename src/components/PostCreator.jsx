@@ -20,7 +20,7 @@ export function PostCreator(){
       {createPost && <CreatePost postCreator={postCreator} setCreatePost={setCreatePost} />}
       <div onClick={postEditor} className="post-creator">
         <div className="app-icon">
-          <img src="../../public/icons/my-feed.svg" alt="My Feed" />
+          <img src="icons/my-feed.svg" alt="My Feed" />
         </div>
       </div>
     </>

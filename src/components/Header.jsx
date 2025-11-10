@@ -6,7 +6,7 @@ export function Header(){
     <header>
       <div className="header-name">
         <div className="app-icon">
-          <img className="app-logo" src="../../public/icons/my-feed.svg" alt="M" />
+          <img className="app-logo" src="icons/my-feed.svg" alt="M" />
         </div>
         <p>MY FEED</p>
       </div>
