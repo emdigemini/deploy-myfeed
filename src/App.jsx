@@ -13,7 +13,7 @@ function App() {
       <MediaProvider>
         <PostProvider>
           <Routes>
-            <Route element={<Startup />} />
+            <Route path='/startup' element={<Startup />} />
             <Route index element={<HomePage />} />
           </Routes>
         </PostProvider>

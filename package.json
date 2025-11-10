@@ -1,6 +1,7 @@
 {
   "name": "my-feed",
   "private": false,
+  "homepage": "https://emdigemini.github.io/deploy-myfeed/",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
