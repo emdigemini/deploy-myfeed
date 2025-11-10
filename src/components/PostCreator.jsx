@@ -97,8 +97,6 @@ function PostActions({ postText, setPostText, setCreatePost, fontSize, setFontSi
   }
 
   const upload = async () => {
-    if(postText.replace(/\s/g, '').length === 0) return;
-    
     const timestamp = Date.now();
     const base64Files = 
       await Promise.all(mediaFiles.map(file => fileToBase64(file)));
