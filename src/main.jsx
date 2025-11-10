@@ -5,7 +5,7 @@ import App from './App'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <Router>
+    <Router basename="/deploy-myfeed">
       <App />
     </Router>
   </StrictMode>,
