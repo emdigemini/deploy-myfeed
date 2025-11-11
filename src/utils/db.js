@@ -13,6 +13,7 @@ export function openDB(){
         const store = db.createObjectStore(STORE_NAME, {keyPath: 'id', autoIncrement: false});
         store.createIndex('timestamp_idx', 'timestamp', {unique: false});
       }
+
     };
     request.onsuccess = function(event){
       resolve(event.target.result);
@@ -59,4 +60,26 @@ export async function getAllPosts(){
 
     transaction.oncomplete = () => db.close();
   })
+}
+
+export async function deletePost(postId){
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+      const transaction = db.transaction([STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      
+      const request = store.delete(postId); 
+
+      request.onsuccess = (e) => {
+        console.log('Post deleted.', e.target.result);
+        resolve(true); 
+      };
+      
+      request.onerror = (e) => {
+        console.error("Failed to delete post:", e.target.error);
+        reject(e.target.error);
+      };
+
+      transaction.oncomplete = () => db.close();
+  });
 }

@@ -104,8 +104,6 @@ function PostActions({ postText, setPostText, setCreatePost, fontSize, setFontSi
       setPostText("");
       setMediaFiles([]);
       setCreatePost(false);
-      console.log('Success.');
-      console.log(postData);
     } catch(error){
       console.error("Error saving post to IndexedDB:", error);
       alert("Sorry, failed to save post.");

@@ -9,6 +9,7 @@
   scroll-behavior: smooth;
 
   .post-card {
+    position: relative;
     display: flex;
     flex-direction: column;
     min-width: 300px;
@@ -21,6 +22,46 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
     overflow: hidden;
 
+    .control-post {
+      position: absolute;
+      top: 5px;
+      right: 15px;
+      cursor: pointer;
+      transition: .3s ease;
+      & i {
+        font-size: 10px;
+        color: var(--gray);
+        :hover {
+          color: #8a8a8a;
+        }
+      }
+    }
+
+    .post-control {
+      position: absolute;
+      top: 15px;
+      right: -5px;
+      font-size: 10px;
+      background: var(--black);
+      border-radius: 4px;
+      color: #FFF;
+      z-index: 2;
+      user-select: none;
+      & ul li {
+        padding: 8px;
+        list-style-type: none;
+        transition: .3s ease;
+      } & li:first-child {
+        &:hover {
+          color: #63c6ff;
+        }
+      } & li:last-child {
+        &:hover {
+          color: #fe4c4c;
+        }
+      }
+    }
+
     .date-posted {
       font-size: 9px;
       margin: 2px 5px;
@@ -28,9 +69,13 @@
     }
 
     .post-text {
-      padding: 10px 15px;
+      padding: 5px 0;
+      width: 100%;
       max-height: 250px;
       height: auto;
+      & p {
+        padding: 20px 15px;
+      }
     }
 
     .post-media {
@@ -62,4 +107,3 @@
     }
   }
 }
-
