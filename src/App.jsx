@@ -3,7 +3,7 @@ import "@fontsource/montserrat"
 import './Main.scss'
 import { Routes, Route } from 'react-router-dom'
 import { Startup } from './components/Startup'
-import { HomePage } from './Pages/Homepage';
+import { HomePage } from './Pages/HomePage';
 import { MediaProvider } from './components/MediaContext';
 import { PostProvider } from './components/PostContext';
 
