@@ -66,8 +66,10 @@ function PostText({ text, fontSize }){
   const [isExpanded, setIsExpanded] = useState(false);
   const textRef = useRef(null);
   useEffect(() => {
-    if(textRef.current.scrollHeight > 250){
+    if(textRef.current && textRef.current.scrollHeight > 250){
       setShowToggle(true);
+    } else {
+      console.log("No post text available.")
     }
   }, [text]);
 
