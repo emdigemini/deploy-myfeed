@@ -1,0 +1,29 @@
+name: Deploy React App to GitHub Pages
+
+# Trigger this workflow on push to the main branch
+on:
+  push:
+    branches:
+      - main   # replace with your default branch if different
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout your repo
+      - uses: actions/checkout@v3
+
+      # 2️⃣ Set up Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # 4️⃣ Deploy to GitHub Pages
+      - name: Build and Deploy
+        run: npm run deploy
