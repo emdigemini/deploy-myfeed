@@ -68,16 +68,16 @@ function CreatePost({ closeCreator, setCreatePost }){
         <div className="prev-media">
           {urls.map((url, i) => {
             return(
-              <div className="media" key={`${url.name}-${i}`}>
+              <div className="media" key={`${url}-${i}`}>
                 <i onClick={() => removeFile(i)} className="bi bi-x"></i>
-                <img className="file" src={url} alt={url.name} />
+                <img className="file" src={url} />
               </div>
             )
           })}
         </div>
         <PostActions postText={postText} setPostText={setPostText}
-        setCreatePost={setCreatePost}
-         fontSize={fontSize} setFontSize={setFontSize} />
+          setCreatePost={setCreatePost}
+          fontSize={fontSize} setFontSize={setFontSize} />
       </div>
     </div>
   )
@@ -87,19 +87,22 @@ function PostActions({ postText, setPostText, setCreatePost, fontSize, setFontSi
   const {mediaFiles, setMediaFiles} = useContext(MediaContext);
   const {postData, setPostData} = useContext(PostContext);
 
-  const fileToBase64 = async (file) => {
+  const convertToB64 = async (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result);
-      reader.onerror = (err) => reject(err);
       reader.readAsDataURL(file);
+      reader.onerror = (err) => {
+        console.log('error reading file', err);
+        reject(err);
+      }; 
     })
   }
 
   const upload = async () => {
     const timestamp = Date.now();
-    const base64Files = 
-      await Promise.all(mediaFiles.map(file => fileToBase64(file)));
+
+    const base64Files = await Promise.all(mediaFiles.map(file => convertToB64(file)));
 
     const newPost = 
       {postText, fontSize, mediaFiles: base64Files, timestamp};

@@ -46,14 +46,15 @@ function PostMedia({ mediaFiles, timestamp }){
 
   const reconstructFiles = (base64Files) => {
     return base64Files.map((b64, i) => {
-      const arr = b64.split(',');
-      const mime = arr[0].match(/:(.*?);/)[1];
-      const bstr = atob(arr[1]);
+      const [meta, data] = b64.split(',');
+      const mime = meta.match(/:(.*?);/)[1];
+      const bstr = atob(data);
       let n = bstr.length;
       const u8arr = new Uint8Array(n);
       while(n--){
         u8arr[n] = bstr.charCodeAt(n);
       }
+      console.log(new File([u8arr], `media-${i}`, {type: mime}));
       return new File([u8arr], `media-${i}`, {type: mime});
     })
   }
