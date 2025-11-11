@@ -1,6 +1,7 @@
 import { useState , useRef, useEffect, useContext } from "react";
 import { PostContext } from "./PostContext";
 import { MediaContext } from "./MediaContext";
+import { getAllPosts, savePost } from "../utils/db";
 
 export function PostCreator(){
   const [createPost, setCreatePost] = useState(false);
@@ -87,34 +88,28 @@ function PostActions({ postText, setPostText, setCreatePost, fontSize, setFontSi
   const {mediaFiles, setMediaFiles} = useContext(MediaContext);
   const {postData, setPostData} = useContext(PostContext);
 
-  const convertToB64 = async (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.readAsDataURL(file);
-      reader.onerror = (err) => {
-        console.log('error reading file', err);
-        reject(err);
-      }; 
-    })
-  }
-
   const upload = async () => {
     const timestamp = Date.now();
-
-    const base64Files = await Promise.all(mediaFiles.map(file => convertToB64(file)));
+    const id = crypto.randomUUID();
 
     const newPost = 
-      {postText, fontSize, mediaFiles: base64Files, timestamp};
-    
-    const sortedData = [...postData, newPost].sort((a, b) => b.timestamp - a.timestamp);
-    setPostData(sortedData);
-    localStorage.setItem("postData", JSON.stringify(sortedData));
-    
-    setFontSize(14);
-    setPostText("");
-    setMediaFiles([]);
-    setCreatePost(false);
+      {id, postText, fontSize, mediaFiles: mediaFiles, timestamp};
+
+    try {
+      await savePost(newPost);
+
+      const updatedPosts = await getAllPosts();
+      setPostData(updatedPosts); 
+      setFontSize(14);
+      setPostText("");
+      setMediaFiles([]);
+      setCreatePost(false);
+      console.log('Success.');
+      console.log(postData);
+    } catch(error){
+      console.error("Error saving post to IndexedDB:", error);
+      alert("Sorry, failed to save post.");
+    }
   }
 
   return (

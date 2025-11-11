@@ -2,8 +2,8 @@ import { useState, useEffect, useContext } from "react"
 import { PostContext } from "./PostContext"
 
 export function PostCard(){
-  const {postData} = useContext(PostContext);
-  
+  const { postData } = useContext(PostContext);
+
   return (
     <>
       {postData.map(post => {
@@ -21,14 +21,14 @@ export function PostCard(){
         })
 
         return (
-          <div key={post.timestamp} className="post-card">
+          <div key={post.id} className="post-card">
             <div className="post-text"
               style={{ fontSize: `${post.fontSize}px` }}
             >
               {post.postText}
             </div>
             <p className="date-posted">{date} at {time}</p>
-            <PostMedia mediaFiles={post.mediaFiles} timestamp={post.timestamp} />
+            <PostMedia mediaFiles={post.mediaFiles} id={post.id} />
             <div className="post-interactions">
               <i aria-label="Like post" className="bi bi-heart"></i>
               <i aria-label="Comment post" className="bi bi-chat"></i>
@@ -41,26 +41,11 @@ export function PostCard(){
   )
 }
 
-function PostMedia({ mediaFiles, timestamp }){
+function PostMedia({ mediaFiles, id }){
   const [urls, setUrls] = useState([]);
 
-  const reconstructFiles = (base64Files) => {
-    return base64Files.map((b64, i) => {
-      const [meta, data] = b64.split(',');
-      const mime = meta.match(/:(.*?);/)[1];
-      const bstr = atob(data);
-      let n = bstr.length;
-      const u8arr = new Uint8Array(n);
-      while(n--){
-        u8arr[n] = bstr.charCodeAt(n);
-      }
-      console.log(new File([u8arr], `media-${i}`, {type: mime}));
-      return new File([u8arr], `media-${i}`, {type: mime});
-    })
-  }
- 
   useEffect(() => {
-    const files = reconstructFiles(mediaFiles);
+    const files = mediaFiles;
     const newUrls = files.map(file => URL.createObjectURL(file));
     setUrls(newUrls);
     return () => newUrls.forEach(url => URL.revokeObjectURL(url));
@@ -70,7 +55,7 @@ function PostMedia({ mediaFiles, timestamp }){
     <>
       {urls.map((url, i) => {
         return (
-          <div key={`${timestamp}-${i}`} className="post-media">
+          <div key={id+i} className="post-media">
             <img src={url} alt={mediaFiles[i].name} /> 
           </div>
         )
