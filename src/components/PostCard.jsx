@@ -18,8 +18,10 @@ export function PostCard(){
   function controlPost(id){
     if(activeControlId === id){
       setActiveControlId(null);
+      console.log("untoggle");
     } else {
       setActiveControlId(id);
+      console.log("toggle");
     }
   }
 
@@ -68,9 +70,7 @@ function PostText({ text, fontSize }){
   useEffect(() => {
     if(textRef.current && textRef.current.scrollHeight > 250){
       setShowToggle(true);
-    } else {
-      console.log("No post text available.")
-    }
+    } 
   }, [text]);
 
   return (
