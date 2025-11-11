@@ -1,5 +1,7 @@
+import DOMPurify from 'dompurify';
+import parse from 'html-react-parser'
 import { useState, useEffect, useContext, useRef } from "react"
-import { deletePost } from "../utils/db";
+import { managePost } from "../utils/db";
 import { PostContext } from "./PostContext"
 
 export function PostCard(){
@@ -45,33 +47,95 @@ export function PostCard(){
               className="bi bi-three-dots"></i>
               {activeControlId === post.id ? <PostControl controlRef={controlRef} id={post.id} /> : ''}
             </div>
-            <div className="post-text"
-              style={{ fontSize: `${post.fontSize}px` }}
-            >
-              {post.postText ? <p>{post.postText}</p> : ''}
-            </div>
+            <PostText text={post.postText} fontSize={post.fontSize} />
             <p className="date-posted">{date} at {time}</p>
             <PostMedia mediaFiles={post.mediaFiles} id={post.id} />
-            <div className="post-interactions">
-              <i aria-label="Like post" className="bi bi-heart"></i>
-              <i aria-label="Comment post" className="bi bi-chat"></i>
-              <i aria-label="Favorite post" className="bi bi-star"></i>
-            </div>
+            <PostInteraction id={post.id} like={post.like} comment={post.comment} favorite={post.favorite} />
           </div>
         )
       })}
+      {postData.length === 0 && (
+        <p className='empty-state'>Your feed is empty. Let today's thoughts live here.</p>
+      )}
     </>
   )
 }
 
-function PostControl({ controlRef, id }){
+function PostText({ text, fontSize }){
+  const [showToggle, setShowToggle] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const textRef = useRef(null);
+  useEffect(() => {
+    if(textRef.current.scrollHeight > 250){
+      setShowToggle(true);
+    }
+  }, [text]);
+
+  return (
+    <div className={`post-text ${!isExpanded
+        ? '' : 'expanded'}
+      `}
+      style={{ fontSize: `${fontSize}px` }}
+    >
+      {text.length > 0 
+      ? <p ref={textRef} >{parse(DOMPurify.sanitize(text))}</p> 
+      : ''}
+      {showToggle === true && <p className='see-more-toggle' 
+      onClick={() => setIsExpanded(!isExpanded)}>
+      {!isExpanded && '...See More'}</p>}
+      {isExpanded && <p className='see-less-toggle' 
+      onClick={() => setIsExpanded(!isExpanded)} >
+      ...See Less
+      </p>}
+    </div>
+  )
+}
+
+function PostInteraction({ id, like, comment, favorite }){
   const { postData, setPostData } = useContext(PostContext);
 
+  function postLike(){
+    const updatedPost = postData.map(post => {
+      if(post.id === id){
+        managePost({...post, like: true}, 'interact')
+        .then(() => console.log("Post liked."))
+        .catch((err) => console.log('Failed to interact with post.', err));
+        return {...post, like: true};
+      } return post;
+    });
+    setPostData(updatedPost)
+  }
+
+  return (
+  <div className="post-interactions">
+    <i aria-label="Like post" onClick={postLike} className='bi bi-heart'>
+      {like 
+      ? <i aria-label="Liked post" 
+      className="bi bi-heart-fill in"></i>
+      : ''}
+    </i>
+    <i aria-label="Comment post" className="bi bi-chat"></i>
+    <i aria-label="Favorite post" className="bi bi-star">
+      {favorite 
+      ? <i aria-label="Liked post" 
+            className="bi bi-star-fill"></i>
+      : ''}
+    </i>
+  </div>
+  )
+}
+
+function PostControl({ controlRef, id }){
+  const { setPostData } = useContext(PostContext);
+
   function delPost(){
-    console.log(id);
-    const select = postData.filter(post => post.id === id);
-    const updatedPost = select.map(post => deletePost(post.id));
-    setPostData(updatedPost);
+    if(!window.confirm("This action can't be undone. Proceed?")) return;
+    managePost(id, 'delete')
+      .then(() => {
+        setPostData(prev => prev.filter(post => post.id !== id));
+      }).catch((err) => {
+        console.log('Failed to delete post.', err);
+      })
   }
 
   return (

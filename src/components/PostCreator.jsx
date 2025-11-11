@@ -1,7 +1,7 @@
 import { useState , useRef, useEffect, useContext } from "react";
 import { PostContext } from "./PostContext";
 import { MediaContext } from "./MediaContext";
-import { getAllPosts, savePost } from "../utils/db";
+import { getAllPosts, managePost } from "../utils/db";
 
 export function PostCreator(){
   const [createPost, setCreatePost] = useState(false);
@@ -45,7 +45,9 @@ function CreatePost({ closeCreator, setCreatePost }){
   }
 
   const writePost = () => {
-    const postField = inputField.current.textContent;
+    const postField = inputField.current.innerHTML
+      .replaceAll('<div>', '<br>')
+      .replaceAll('</div>', '');
     setPostText(postField);
     if(postField.length > 0){
       inputField.current.classList.remove('empty');
@@ -87,16 +89,29 @@ function CreatePost({ closeCreator, setCreatePost }){
 function PostActions({ postText, setPostText, setCreatePost, fontSize, setFontSize }){
   const {mediaFiles, setMediaFiles} = useContext(MediaContext);
   const {postData, setPostData} = useContext(PostContext);
+  const postRef = useRef(null);
+
+  useEffect(() => {
+    if(postText.trim().length === 0 && mediaFiles.length === 0){
+      postRef.current.classList.add('unavailable');
+    } else {
+      postRef.current.classList.remove('unavailable');
+    }
+  }, [postText, mediaFiles]);
 
   const upload = async () => {
+    if(postText.trim().length === 0 && mediaFiles.length === 0) {
+      postRef.current.classList.add('unavailable');
+      return;
+    }
     const timestamp = Date.now();
     const id = crypto.randomUUID();
 
     const newPost = 
-      {id, postText, fontSize, mediaFiles: mediaFiles, timestamp};
+      {id, postText, fontSize, mediaFiles: mediaFiles, timestamp, like: false, comment: [], favorite: false};
 
     try {
-      await savePost(newPost);
+      await managePost(newPost, 'save');
 
       const updatedPosts = await getAllPosts();
       setPostData(updatedPosts); 
@@ -116,7 +131,7 @@ function PostActions({ postText, setPostText, setCreatePost, fontSize, setFontSi
         <AddMedia setMediaFiles={setMediaFiles} />
         <AdjustFontsize fontSize={fontSize} setFontSize={setFontSize} />
       </div>
-      <button onClick={upload} className="submit-post">POST</button>
+      <button ref={postRef} onClick={upload} className="submit-post">POST</button>
     </div>
   )
 }

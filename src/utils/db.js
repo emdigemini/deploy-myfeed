@@ -24,22 +24,34 @@ export function openDB(){
   })
 }
 
-export async function savePost(data){
+export async function managePost(data, action){
   const db = await openDB();
   return new Promise((resolve, reject) => {
-    const transaction =  db.transaction([STORE_NAME], 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    const request = store.put(data);
+      const transaction = db.transaction([STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      let request;
 
-    request.onsuccess = () => resolve(true);
-    request.onerror = (e) => {
-      alert('Failed to save post, please try again.', e.target.error);
-      reject(e.target.error);
-    };
+      switch(action){
+      case 'save':
+      case 'interact':
+        request = store.put(data);
+        break;
+      case 'delete':
+        request = store.delete(data);
+        break;
+      default:
+        return reject("Invalid action parameter. Use 'save', 'interact', or 'delete'.");
+    }
+      
+      request.onsuccess = () => resolve(true); 
+      request.onerror = (e) => {
+        console.error("Action failed.", e.target.error);
+        reject(e.target.error);
+      };
 
-    transaction.oncomplete = () => console.log('Posted successfuly!');;
-  })
-} 
+      transaction.oncomplete = () => db.close();
+  });
+}
 
 export async function getAllPosts(){
   const db = await openDB();
@@ -60,26 +72,4 @@ export async function getAllPosts(){
 
     transaction.oncomplete = () => db.close();
   })
-}
-
-export async function deletePost(postId){
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-      const transaction = db.transaction([STORE_NAME], 'readwrite');
-      const store = transaction.objectStore(STORE_NAME);
-      
-      const request = store.delete(postId); 
-
-      request.onsuccess = (e) => {
-        console.log('Post deleted.', e.target.result);
-        resolve(true); 
-      };
-      
-      request.onerror = (e) => {
-        console.error("Failed to delete post:", e.target.error);
-        reject(e.target.error);
-      };
-
-      transaction.oncomplete = () => db.close();
-  });
 }

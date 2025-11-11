@@ -9,6 +9,7 @@ header {
   color: #FFF;
   background: var(--black);
   padding: 30px 20px 20px;
+  box-shadow: 0 2px 10px #00000051;
   z-index: 2;
   .header-name {
     display: flex;
@@ -25,5 +26,6 @@ header {
   } 
   & i {
     font-size: 24px;
+    cursor: pointer;
   }
 }
