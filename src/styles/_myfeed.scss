@@ -38,6 +38,7 @@
       cursor: pointer;
       user-select: none;
       transition: .3s ease;
+      z-index: 95;
       & i {
         position: relative;
         font-size: 10px;
