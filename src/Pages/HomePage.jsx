@@ -1,4 +1,4 @@
-import { Header } from "../components/header";
+import { Header } from "../components/Header";
 import { MyFeed } from "../components/Myfeed";
 import { PostCreator } from "../components/PostCreator";
 
