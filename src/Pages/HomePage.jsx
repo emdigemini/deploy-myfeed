@@ -10,7 +10,7 @@ export function HomePage(){
         <Header />
         <Routes>
           <Route path="myfeed" element={<MyFeed />} />
-          <Route path="profile" element={<MyProfile />} />
+          <Route path="myprofile" element={<MyProfile />} />
         </Routes>
         <PostCreator />
     </>
