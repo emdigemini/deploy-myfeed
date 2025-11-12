@@ -7,7 +7,7 @@
       const navigate = useNavigate();
       useEffect(() => {
         const timer = setTimeout(() => {
-          navigate("/myfeed", {replace: true});
+          navigate("/home/myfeed", {replace: true});
         }, 5000);
 
         return () => clearTimeout(timer);

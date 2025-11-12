@@ -16,6 +16,7 @@ header {
     align-items: center;
     gap: 6px;
     user-select: none;
+    cursor: pointer;
     .app-icon {
       height: 24px;
       width: 24px;
@@ -31,9 +32,6 @@ header {
 
   .sidebar {
     position: absolute;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
     right: 0;
     top: 0;
     height: 100vh;
@@ -41,26 +39,30 @@ header {
     background: var(--black);
     box-shadow: 2px 0 20px #00000055;
     z-index: 2;
-    & button {
-      padding: 15px 20px;
-      border: none;
-      font-weight: 600;
-      background: var(--primary-gray);
-      border-radius: 20px;
-      width: 150px;
-      cursor: pointer;
-      transition: .3s ease;
-      &:hover {
-        background: #FFF;
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      margin-top: 4rem;
+      gap: 20px;
+      & button {
+        padding: 15px 20px;
+        border: none;
+        font-weight: 600;
+        background: var(--primary-gray);
+        border-radius: 20px;
+        width: 150px;
+        cursor: pointer;
+        transition: .3s ease;
+        &:hover {
+          background: #FFF;
+        }
+      }
+      & button:last-child {
+        position: absolute;
+        bottom: 4rem;
       }
     }
-    & button:first-child {
-      margin-top: 4rem;
-    }
-    & button:last-child {
-      position: absolute;
-      bottom: 4rem;
-    }
+    
   }
   .sidebar.in {
     animation: slideToLeft .2s ease;

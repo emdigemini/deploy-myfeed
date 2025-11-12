@@ -14,7 +14,7 @@ function App() {
         <PostProvider>
           <Routes>
             <Route path='/' element={<Startup />} />
-            <Route path="/myfeed" element={<HomePage />} />
+            <Route path="/home/*" element={<HomePage />} />
           </Routes>
         </PostProvider>
       </MediaProvider>
