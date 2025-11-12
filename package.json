@@ -13,7 +13,11 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@fontsource/manrope": "^5.2.8",
     "@fontsource/montserrat": "^5.2.8",
+    "@fontsource/poppins": "^5.2.7",
+    "@fontsource/rubik": "^5.2.8",
+    "@fontsource/urbanist": "^5.2.7",
     "aos": "^2.3.4",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",

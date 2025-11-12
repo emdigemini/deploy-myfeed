@@ -38,7 +38,7 @@
       cursor: pointer;
       user-select: none;
       transition: .3s ease;
-      z-index: 95;
+      z-index: 2;
       & i {
         position: relative;
         font-size: 10px;
@@ -58,7 +58,7 @@
       background: var(--black);
       border-radius: 4px;
       color: #FFF;
-      z-index: 90;
+      z-index: 2;
       user-select: none;
       & ul li {
         padding: 8px;
@@ -138,12 +138,17 @@
           color: #aa2f56;
         }
       }
+      .bi-star {
+        &:hover {
+          color: #e6d158;
+        }
+      }
       & i {
         position: relative;
         font-size: 23px;
         cursor: pointer;
         user-select: none;
-        transition: .4s;
+        transition: .4s ease-in;
         .bi-heart-fill {
           position: absolute;
           top: -1px;

@@ -1,5 +1,5 @@
-import { Header } from "../components/Header";
-import { MyFeed } from "../components/Myfeed";
+import { Header } from "../components/NavMenu";
+import { MyFeed } from "../components/MyFeed";
 import { PostCreator } from "../components/PostCreator";
 
 export function HomePage(){

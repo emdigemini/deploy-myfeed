@@ -9,19 +9,25 @@ export function PostCard(){
   const [activeControlId, setActiveControlId] = useState();
   const controlRef = useRef(null);
 
-  const closeControl = (e) => {
-    if(!activeControlId) return;
-    console.log('hello');
-    console.log(e.target);
-  }
+
+  useEffect(() => {
+    const closeControl = (e) => {
+      if(!activeControlId) return;
+      if(controlRef.current 
+        && controlRef.current.contains(e.target)){
+        return;
+      }
+        setActiveControlId(null);
+    }
+    document.addEventListener('click', closeControl);
+    return () => document.removeEventListener('click', closeControl);
+  }, [activeControlId])
 
   function controlPost(id){
     if(activeControlId === id){
       setActiveControlId(null);
-      console.log("untoggle");
     } else {
       setActiveControlId(id);
-      console.log("toggle");
     }
   }
 
@@ -45,7 +51,10 @@ export function PostCard(){
           <div key={post.id} className="post-card">
             <div className="control-post">
               <i aria-label="Control post"
-              onClick={() => controlPost(post.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                controlPost(post.id);
+              }}
               className="bi bi-three-dots"></i>
               {activeControlId === post.id ? <PostControl controlRef={controlRef} id={post.id} /> : ''}
             </div>
@@ -96,31 +105,45 @@ function PostText({ text, fontSize }){
 function PostInteraction({ id, like, comment, favorite }){
   const { postData, setPostData } = useContext(PostContext);
 
-  function postLike(){
+  function postToLike(){
     const updatedPost = postData.map(post => {
-      if(post.id === id){
-        managePost({...post, like: true}, 'interact')
-        .then(() => console.log("Post liked."))
-        .catch((err) => console.log('Failed to interact with post.', err));
-        return {...post, like: true};
-      } return post;
+      if (post.id !== id) return post;
+      const newLike = !post.like;
+      managePost({ ...post, like: newLike }, 'interact')
+        .then(() => console.log(`Post ${newLike ? 'liked' : 'like removed'}.`))
+        .catch(err => console.log('Failed to interact with post.', err));
+
+      return { ...post, like: newLike };
+    });
+    setPostData(updatedPost)
+  }
+
+  function postToFavorite(){
+    const updatedPost = postData.map(post => {
+      if (post.id !== id) return post;
+      const newFavorite = !post.favorite;
+      managePost({ ...post, favorite: newFavorite }, 'interact')
+        .then(() => console.log(`Post ${newFavorite ? 'favorite.' : 'favorite removed.'}.`))
+        .catch(err => console.log('Failed to interact with post.', err));
+
+      return { ...post, favorite: newFavorite };
     });
     setPostData(updatedPost)
   }
 
   return (
   <div className="post-interactions">
-    <i aria-label="Like post" onClick={postLike} className='bi bi-heart'>
+    <i aria-label="Like post" onClick={postToLike} className='bi bi-heart'>
       {like 
       ? <i aria-label="Liked post" 
       className="bi bi-heart-fill in"></i>
       : ''}
     </i>
     <i aria-label="Comment post" className="bi bi-chat"></i>
-    <i aria-label="Favorite post" className="bi bi-star">
+    <i aria-label="Favorite post" onClick={postToFavorite} className="bi bi-star">
       {favorite 
-      ? <i aria-label="Liked post" 
-            className="bi bi-star-fill"></i>
+      ? <i aria-label="Favorite post" 
+            className="bi bi-star-fill in"></i>
       : ''}
     </i>
   </div>
