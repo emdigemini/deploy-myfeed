@@ -3,24 +3,84 @@ import { PostContext } from "./PostContext";
 import { MediaContext } from "./MediaContext";
 import { getAllPosts, managePost } from "../utils/db";
 
-export function PostCreator(){
+export function PostCreator() {
   const [createPost, setCreatePost] = useState(false);
+  const [isHolding, setIsHolding] = useState(false);
+  const [pos, setPos] = useState({ x: 85, y: 90 });
+  const [startDrag, setStartDrag] = useState({
+    startX: 0,
+    startY: 0,
+    x: 85,
+    y: 90
+  });
 
-  function closeCreator(e){
-    if(e.target.classList.contains('create-post-overlay')) setCreatePost(false);
-  }
+  const closeCreator = (e) => {
+    if (e.target.classList.contains("create-post-overlay")) setCreatePost(false);
+  };
+
+  const getClientCoords = (e) => {
+    if (e.touches && e.touches.length > 0) {
+      return { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
+    } else {
+      return { clientX: e.clientX, clientY: e.clientY };
+    }
+  };
+
+  const handleDragStart = (e) => {
+    const { clientX, clientY } = getClientCoords(e);
+    setIsHolding(true);
+    setStartDrag({
+      startX: clientX,
+      startY: clientY,
+      x: pos.x,
+      y: pos.y
+    });
+  };
+
+  const handleDragMove = (e) => {
+    if (!isHolding) return;
+    const { clientX, clientY } = getClientCoords(e);
+
+    const dx = clientX - startDrag.startX;
+    const dy = clientY - startDrag.startY;
+
+    const newX = Math.min(100, Math.max(0, startDrag.x + (dx / window.innerWidth) * 100));
+    const newY = Math.min(100, Math.max(0, startDrag.y + (dy / window.innerHeight) * 100));
+
+    setPos({ x: newX, y: newY });
+  };
+
+  const handleDragEnd = () => setIsHolding(false);
 
   return (
     <>
       {createPost && <CreatePost closeCreator={closeCreator} setCreatePost={setCreatePost} />}
-      <div onClick={() => setCreatePost(true)} className="post-creator">
-        <button className="app-icon">
-          <img src="icons/my-feed.svg" alt="My Feed" />
+      <div
+        className="post-creator"
+        onMouseMove={handleDragMove}
+        onMouseUp={handleDragEnd}
+        onMouseLeave={handleDragEnd}
+        onTouchMove={handleDragMove}
+        onTouchEnd={handleDragEnd}
+        onMouseDown={handleDragStart}
+          onTouchStart={handleDragStart}
+          onClick={() => setCreatePost(true)}
+          style={{
+            transform: `translate(${pos.x}vw, ${pos.y}vh)`,
+            transition: isHolding ? "none" : "transform 0.05s linear"
+          }}
+      >
+        <button
+          className="app-icon"
+          
+        >
+          <img draggable={false} src="icons/my-feed.svg" alt="My Feed" />
         </button>
       </div>
     </>
   );
 }
+
 
 function CreatePost({ closeCreator, setCreatePost }){
   const {mediaFiles, setMediaFiles} = useContext(MediaContext);
@@ -105,7 +165,18 @@ function PostActions({ postText, setPostText, setCreatePost, fontSize, setFontSi
       return;
     }
     const timestamp = Date.now();
-    const id = crypto.randomUUID();
+    function generateUUID() {
+      if (crypto && crypto.randomUUID) {
+        return crypto.randomUUID();
+      } else {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+          const r = Math.random() * 16 | 0;
+          const v = c === 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+      }
+    }
+    const id = generateUUID();
 
     const newPost = 
       {id, postText, fontSize, mediaFiles: mediaFiles, timestamp, like: false, comment: [], favorite: false};

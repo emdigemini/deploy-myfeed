@@ -2,7 +2,7 @@ header {
   position: sticky;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 100vw;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -29,52 +29,51 @@ header {
     font-size: 24px;
     cursor: pointer;
   }
-
-  .sidebar {
-    position: absolute;
-    right: 0;
-    top: 0;
-    height: 100vh;
-    padding: 30px;
-    background: var(--black);
-    box-shadow: 2px 0 20px #00000055;
-    z-index: 2;
-    .buttons {
-      display: flex;
-      flex-direction: column;
-      margin-top: 4rem;
-      gap: 20px;
-      & button {
-        padding: 15px 20px;
-        border: none;
-        font-weight: 600;
-        background: var(--primary-gray);
-        border-radius: 20px;
-        width: 150px;
-        cursor: pointer;
-        transition: .3s ease;
-        &:hover {
-          background: #FFF;
-        }
-      }
-      & button:last-child {
-        position: absolute;
-        bottom: 4rem;
+}
+.sidebar {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  padding: 30px;
+  background: var(--black);
+  box-shadow: 2px 0 20px #00000055;
+  z-index: 10;
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    margin-top: 4rem;
+    gap: 20px;
+    & button {
+      padding: 15px 20px;
+      border: none;
+      font-weight: 600;
+      background: var(--primary-gray);
+      border-radius: 20px;
+      width: 150px;
+      cursor: pointer;
+      transition: all .3s linear;
+      &:hover {
+        background: #FFF;
       }
     }
-    
+    & button:last-child {
+      position: absolute;
+      bottom: 4rem;
+    }
   }
-  .sidebar.in {
-    animation: slideToLeft .2s ease;
-  }
-  .sidebar.in.close {
-    animation: slideOutRight .2s ease forwards;
-  }
+  
+}
+.sidebar.in {
+  animation: slideToLeft .2s ease;
+}
+.sidebar.in.close {
+  animation: slideOutRight .2s ease forwards;
 }
 
 @keyframes slideToLeft {
   0% {
-    transform: translateX(50vw);
+    transform: translateX(60vw);
   } 100% {
     transform: translateX(0);
   }
@@ -84,6 +83,6 @@ header {
   0% {
     transform: translateX(0);
   } 100% {
-    transform: translateX(50vw);
+    transform: translateX(60vw);
   }
 }

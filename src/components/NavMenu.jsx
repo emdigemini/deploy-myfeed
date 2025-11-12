@@ -28,22 +28,25 @@ export function Header(){
   }, [showToggle]);
 
   return (
-    <header>
-      <div className="header-name"
-      onClick={() => navigate('/home/myfeed')}
-      >
-        <div className="app-icon">
-          <img className="app-logo" src="icons/my-feed.svg" alt="M" />
+    <>
+      <header>
+        <div className="header-name"
+        onClick={() => navigate('/home/myfeed')}
+        >
+          <div className="app-icon">
+            <img className="app-logo" src="icons/my-feed.svg" alt="M" />
+          </div>
+          <p>MY FEED</p>
         </div>
-        <p>MY FEED</p>
-      </div>
-      <div ref={gridRef} onClick={() => setShowToggle(true)} className="menu-bar">
-        <i className="bi bi-grid-3x3-gap"></i>
-      </div>
+        <div ref={gridRef} onClick={() => setShowToggle(true)} className="menu-bar">
+          <i className="bi bi-grid-3x3-gap"></i>
+        </div>
+      </header>
       {showToggle && <SideMenu showToggle={showToggle} menuRef={menuRef} 
-        setShowToggle={setShowToggle}
-      />}
-    </header>
+          setShowToggle={setShowToggle}
+        />}
+    </>
+    
   );
 }
 

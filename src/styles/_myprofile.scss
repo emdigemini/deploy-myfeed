@@ -1,0 +1,96 @@
+.my-profile {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  .cover-photo {
+    background: var(--primary-gray);
+    height: 250px;
+  }
+  .profile-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding: 10rem 20px 0;
+    align-items: center;
+
+    .profile-photo {
+      position: absolute;
+      height: 250px;
+      width: 250px;
+      top: 0px;
+      left: 50%;
+      padding: 30px;
+      transform: translate(-50%, -50%);
+      .my-profile {
+        height: 100%;
+        width: 100%;
+        border-radius: 100px;
+        background: var(--gray);
+        box-shadow: 0 5px 20px #0000005c;
+        overflow: hidden;
+        & img {
+          height: 100%;
+          width: 100%;
+          object-fit: cover;
+          object-position: center;
+        }
+      } 
+      & p {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translate(-50%, -100%);
+      }
+    }
+    .info-card, .info-card2 {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      .name-data, .bday-data,
+      .photo-count, .post-count {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 6px;
+        width: 150px;
+        font-size: 14px;
+        border-bottom: 1px solid var(--black);
+        & label {
+          font-size: 10px;
+          color: var(--gray);
+        }
+      }
+    }
+
+    .about-card {
+      display: flex;
+      width: 100%;
+      .about-data {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+        border-bottom: 1px solid var(--black);
+        & label {
+          font-size: 10px;
+          color: var(--gray);
+        }
+      }
+    }
+    .created-date {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-bottom: 1px solid var(--black);
+      & label {
+        font-size: 10px;
+        color: var(--gray); 
+      }
+    }
+  }
+}
