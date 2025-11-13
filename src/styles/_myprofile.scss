@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  margin-bottom: 40px;
   .cover-photo {
     background: var(--primary-gray);
     height: 250px;
@@ -13,7 +14,6 @@
     gap: 40px;
     padding: 10rem 20px 0;
     align-items: center;
-
     .profile-photo {
       position: absolute;
       height: 250px;
@@ -41,6 +41,17 @@
         top: 100%;
         left: 50%;
         transform: translate(-50%, -100%);
+        &:focus {
+          border-bottom: 1px solid #000;
+          outline: none;
+        }
+      } & i {
+        position: absolute;
+        user-select: none;
+        top: 60%;
+        left: 105%;
+        transform: translate(-50%, -100%);
+        cursor: pointer;
       }
     }
     .info-card, .info-card2 {
@@ -60,24 +71,46 @@
         & label {
           font-size: 10px;
           color: var(--gray);
+        } & input {
+          border: none;
+          text-align: center;
+          &:focus {
+            outline: none;
+            border: none;
+          }
         }
       }
     }
 
     .about-card {
       display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: center;
       width: 100%;
       .about-data {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 6px;
+        font-size: 14px;
         width: 100%;
         border-bottom: 1px solid var(--black);
         & label {
           font-size: 10px;
           color: var(--gray);
+        } & p {
+          position: relative;
+          text-align: center;
+          height: auto;
+          width: 100%;
+          padding-bottom: 6px;
+          &:focus {
+            outline: none;
+          }
         }
+      } & span {
+        font-size: 8px;
       }
     }
     .created-date {
@@ -85,6 +118,7 @@
       flex-direction: column;
       text-align: center;
       gap: 6px;
+      font-size: 14px;
       padding: 5px 10px;
       border-bottom: 1px solid var(--black);
       & label {

@@ -1,9 +1,11 @@
 import { useState , useRef, useEffect, useContext } from "react";
+import { useLocation } from "react-router-dom";
 import { PostContext } from "./PostContext";
 import { MediaContext } from "./MediaContext";
 import { getAllPosts, managePost } from "../utils/db";
 
 export function PostCreator() {
+  const location = useLocation(); 
   const [createPost, setCreatePost] = useState(false);
   const [isHolding, setIsHolding] = useState(false);
   const [pos, setPos] = useState({ x: 85, y: 90 });
@@ -13,6 +15,16 @@ export function PostCreator() {
     x: 85,
     y: 90
   });
+
+  const postCreatorIcon = useRef(null);
+
+  useEffect(() => {
+    if(postCreatorIcon.current && location.pathname !== '/home/myfeed'){
+      postCreatorIcon.current.style.display = 'none';
+    } else {
+      postCreatorIcon.current.style.display = 'flex';
+    }
+  }, [location])
 
   const closeCreator = (e) => {
     if (e.target.classList.contains("create-post-overlay")) setCreatePost(false);
@@ -56,6 +68,7 @@ export function PostCreator() {
     <>
       {createPost && <CreatePost closeCreator={closeCreator} setCreatePost={setCreatePost} />}
       <div
+        ref={postCreatorIcon}
         className="post-creator"
         onMouseMove={handleDragMove}
         onMouseUp={handleDragEnd}

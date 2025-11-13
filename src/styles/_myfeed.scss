@@ -134,16 +134,6 @@
       min-height: 50px;
       height: auto;
       background: var(--black);
-      .bi-heart {
-        &:hover {
-          color: #aa2f56;
-        }
-      }
-      .bi-star {
-        &:hover {
-          color: #e6d158;
-        }
-      }
       & i {
         position: relative;
         font-size: 23px;
@@ -157,7 +147,7 @@
           left: 0;
         }
         .bi-heart-fill.in {
-          animation: zoomIn .4s ease-out forwards;
+          animation: zoomIn .2s ease-out forwards;
         }
         .bi-star-fill {
           position: absolute;
@@ -166,7 +156,7 @@
           left: 0;
         }
         .bi-star-fill.in {
-          animation: zoomIn .4s ease-out forwards;
+          animation: zoomIn .2s ease-out forwards;
         }
       }
     }

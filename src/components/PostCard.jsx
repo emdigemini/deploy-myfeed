@@ -105,6 +105,29 @@ function PostText({ text, fontSize }){
 function PostInteraction({ id, like, comment, favorite }){
   const { postData, setPostData } = useContext(PostContext);
 
+  function postToInteract(interact){
+    const updatedPost = postData.map(post => {
+      if (post.id !== id) return post;
+      let updatePost;
+      switch(interact){
+        case 'like':
+          updatePost = !post.like;
+          break;
+        case 'favorite':
+          updatePost = !post.favorite;
+          break;
+        default: 
+          console.log(`Failed to interact with post ID ${post.id}`);
+      }
+      managePost({ ...post, ...(interact === 'like' ? { like: updatePost } : { favorite: updatePost }) }, 'interact')
+        .then(() => console.log(`Post ${updatePost ? interact : interact + ' removed'}.`))
+        .catch(err => console.log('Failed to interact with post.', err));
+
+      return { ...post, ...(interact === 'like' ? {like: updatePost} : {favorite: updatePost}) };
+    });
+    setPostData(updatedPost)
+  }
+
   function postToLike(){
     const updatedPost = postData.map(post => {
       if (post.id !== id) return post;
@@ -133,14 +156,14 @@ function PostInteraction({ id, like, comment, favorite }){
 
   return (
   <div className="post-interactions">
-    <i aria-label="Like post" onClick={postToLike} className='bi bi-heart'>
+    <i aria-label="Like post" onClick={() => postToInteract('like')} className='bi bi-heart'>
       {like 
       ? <i aria-label="Liked post" 
       className="bi bi-heart-fill in"></i>
       : ''}
     </i>
     <i aria-label="Comment post" className="bi bi-chat"></i>
-    <i aria-label="Favorite post" onClick={postToFavorite} className="bi bi-star">
+    <i aria-label="Favorite post" onClick={() => postToInteract('favorite')} className="bi bi-star">
       {favorite 
       ? <i aria-label="Favorite post" 
             className="bi bi-star-fill in"></i>
