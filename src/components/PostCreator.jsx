@@ -225,6 +225,11 @@ function AddMedia({ setMediaFiles }){
 
   const handleFiles = (e) => {
     const files = Array.from(e.target.files);
+    if(!files[0].type.startsWith("image/")) {
+      alert("Invalid file type. Please choose an image.");
+      return;
+    };
+
     setMediaFiles(prev => [...prev, ...files]);
     e.target.value = "";
   }
@@ -239,7 +244,7 @@ function AddMedia({ setMediaFiles }){
         onChange={handleFiles}
         type="file"
         id="fileInput"
-        accept="image"
+        accept="image/*"
         multiple
       />
       <div className="media-label">

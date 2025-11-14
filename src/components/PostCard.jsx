@@ -9,7 +9,6 @@ export function PostCard(){
   const [activeControlId, setActiveControlId] = useState();
   const controlRef = useRef(null);
 
-
   useEffect(() => {
     const closeControl = (e) => {
       if(!activeControlId) return;

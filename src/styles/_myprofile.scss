@@ -4,8 +4,26 @@
   width: 100%;
   margin-bottom: 40px;
   .cover-photo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: var(--primary-gray);
     height: 250px;
+    & img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    } & i {
+      position: absolute;
+      font-size: 2rem;
+      color: #67a1c0;
+      margin-bottom: 25px;
+      cursor: pointer;
+      transition: .2s ease;
+      &:hover {
+        color: #92c7e3;
+      }
+    }
   }
   .profile-card {
     position: relative;
@@ -34,6 +52,17 @@
           width: 100%;
           object-fit: cover;
           object-position: center;
+        } & i {
+          position: absolute;
+          font-size: 2rem;
+          color: #67a1c0;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          cursor: pointer;
+          &:hover {
+            color: #92c7e3;
+          }
         }
       } 
       & p {
@@ -41,6 +70,8 @@
         top: 100%;
         left: 50%;
         transform: translate(-50%, -100%);
+        min-width: 80px;
+        text-align: center;
         &:focus {
           border-bottom: 1px solid #000;
           outline: none;
@@ -93,7 +124,7 @@
         flex-direction: column;
         align-items: center;
         gap: 6px;
-        font-size: 14px;
+        font-size: 13px;
         width: 100%;
         border-bottom: 1px solid var(--black);
         & label {
