@@ -6,6 +6,7 @@ import { getUserData, manageUserProfile } from '../utils/db';
 
 export function MyProfile(){
   const [ userProfile, setUserProfile ] = useState([]);
+  const [ profilePhoto, setProfilePhoto ] = useState([]);
   const [ isEditing, setIsEditing ] = useState(false);
 
   useEffect(() => {
@@ -43,6 +44,25 @@ export function MyProfile(){
 }
 
 function PROFILE_PREVIEW({ editProfile, userProfile }){
+  const [ photoURL1, setPhotoURL1 ] = useState([]); 
+    
+  useEffect(() => {
+    if(userProfile.length === 0) return;
+    let newPhoto;
+    const userWithFilePhoto = userProfile.find(
+      user => user.profilePhoto && user.profilePhoto.length > 0
+    );
+
+    newPhoto = userWithFilePhoto
+      ? URL.createObjectURL(userWithFilePhoto.profilePhoto[0])
+      : 'images/default-profile.jpg';
+
+    setPhotoURL1(newPhoto);
+
+    return () => {
+      if(userWithFilePhoto) URL.revokeObjectURL(newPhoto);
+    };
+  }, [userProfile]);
   
   return (
     <>
@@ -52,7 +72,6 @@ function PROFILE_PREVIEW({ editProfile, userProfile }){
         year: 'numeric',
         day: 'numeric'
       });
-      console.log(info);
         return <div key={i}>
           <div className="cover-photo">
 
@@ -62,7 +81,9 @@ function PROFILE_PREVIEW({ editProfile, userProfile }){
               
               <div className="my-profile">
                 {/* DITO PICTURE */}
-                <img src={info.profilePhoto.map(file => URL.createObjectURL(file))} alt="ME" />
+                {photoURL1
+                ? <img src={photoURL1} alt="ME" />
+                : <img src="images/default-profile" alt="" />}
               </div>
               <p>{info.nickname}</p>
               <i onClick={editProfile} className="bi bi-pencil-square"></i>
@@ -105,8 +126,10 @@ function PROFILE_PREVIEW({ editProfile, userProfile }){
 }
 
 function EDIT_PROFILE({ editProfile, userProfile, setUserProfile }){
-  const [ coverPhoto, setCoverPhoto ] = useState([]);
-  const [ profilePhoto, setProfilePhoto ] = useState([]);
+  const [ coverPhoto, setCoverPhoto ] = useState(null);
+  const [ profilePhoto, setProfilePhoto ] = useState(null);
+  const [ photoURL1, setPhotoURL1 ] = useState([]); 
+
   const nicknameRef = useRef(null);
   const nameRef = useRef(null);
   const bdateRef = useRef(null);
@@ -115,35 +138,56 @@ function EDIT_PROFILE({ editProfile, userProfile, setUserProfile }){
   const photo2 = useRef(null);
 
   const changePhoto = (type) => {
-    if(type === 'cover'){
-      const file = Array.from(photo1.current.files);
-      setCoverPhoto(file);
-    } else {
-      const file = Array.from(photo2.current.files);
-      setProfilePhoto(file);
-    }
-  }
+    const files = type === 'cover' ? photo1.current.files : photo2.current.files;
+    if(files.length === 0) return;
 
-  const saveInfo = () => {
-    const coverPhoto = Array.from(photo1.current.files);
-    const profilePhoto = Array.from(photo2.current.files);
-    const id = 'user';
-    const nickname = nicknameRef.current.textContent;
-    const name = nameRef.current.value;
-    const about = aboutRef.current.innerHTML
-      .replaceAll('<div>', '<br>')
-      .replaceAll('</div>', '');
-    const bdate = bdateRef.current.value;
+    const url = URL.createObjectURL(files[0]);
+      if(type === 'cover') setCoverPhoto(url);
+      else setProfilePhoto(url);
+    };
 
-    const updatedProfile = { id, nickname, name, bdate, about };
+    const saveInfo = () => {
+      const currentProfile = userProfile[0];
+      console.log(currentProfile.profilePhoto);
+      const coverPhoto = Array.from(photo1.current.files);
+      const profilePhoto = Array.from(photo2.current.files);
+      const id = 'user';
+      const nickname = nicknameRef.current.textContent;
+      const name = nameRef.current.value;
+      const about = aboutRef.current.innerHTML
+        .replaceAll('<div>', '<br>')
+        .replaceAll('</div>', '');
+      const bdate = bdateRef.current.value;
 
-    if (coverPhoto.length > 0) updatedProfile.coverPhoto = coverPhoto;
-    if (profilePhoto.length > 0) updatedProfile.profilePhoto = profilePhoto;
+      const updatedProfile = { id, nickname, name, bdate, about, 
+        coverPhoto: coverPhoto || 'images/default-cover.jpg', 
+        profilePhoto: profilePhoto || (currentProfile && currentProfile.profilePhoto) || 'images/default-profile.jpg' };
 
-    setUserProfile([updatedProfile]);
-    manageUserProfile(updatedProfile);
-    editProfile();
-};
+      if (coverPhoto.length > 0) updatedProfile.coverPhoto = coverPhoto;
+      if (profilePhoto.length > 0) updatedProfile.profilePhoto = profilePhoto;
+
+      setUserProfile([updatedProfile]);
+      manageUserProfile(updatedProfile);
+      editProfile();
+  };
+
+  useEffect(() => {
+    if(userProfile.length === 0) return;
+    let newPhoto;
+    const userWithFilePhoto = userProfile.find(
+      user => user.profilePhoto && user.profilePhoto.length > 0
+    );
+
+    newPhoto = userWithFilePhoto
+      ? URL.createObjectURL(userWithFilePhoto.profilePhoto[0])
+      : 'images/default-profile.jpg';
+
+    setPhotoURL1(newPhoto);
+
+    return () => {
+      if(userWithFilePhoto) URL.revokeObjectURL(newPhoto);
+    };
+  }, [userProfile])
 
 
   return (
@@ -151,14 +195,10 @@ function EDIT_PROFILE({ editProfile, userProfile, setUserProfile }){
       {userProfile.map((info, i) => {
         return <div key={i}>
         <div className="cover-photo">
-            {coverPhoto.length > 0 
-            ? coverPhoto.map((file, i) => {
-              return <img key={i}
-               src={URL.createObjectURL(file)}
-               alt={file.name}
-               className='edit-cvp' />
-            })
-            : <img src={info.coverPhoto.map(file => URL.createObjectURL(file))} alt="ME" />}
+          {<img
+            src={coverPhoto || info.coverPhoto || 'images/default-cover.jpg'}
+            alt="ME"
+          />}
           <input 
            ref={photo1}
            onChange={() => changePhoto('cover')}
@@ -182,14 +222,10 @@ function EDIT_PROFILE({ editProfile, userProfile, setUserProfile }){
                 style={{
                   display: 'none'
                 }} />
-              {profilePhoto.length > 0 
-              ? profilePhoto.map((file, i) => {
-                return <img key={i}
-                src={URL.createObjectURL(file)}
-                alt={file.name}
-                className='edit-cvp' />
-              })
-              : <img src={info.profilePhoto.map(file => URL.createObjectURL(file))} alt="ME" />}
+              <img
+                src={profilePhoto || photoURL1 || 'images/default-profile.jpg'}
+                alt="ME"
+              />
               <i onClick={() => photo2.current.click()} className="bi bi-image-fill"></i>
             </div>
             <p 
@@ -266,6 +302,4 @@ function CountPost(){
       </div>
     </>
   )
-}
-function ProfileEditor(){
 }

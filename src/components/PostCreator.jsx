@@ -159,6 +159,7 @@ function CreatePost({ closeCreator, setCreatePost }){
   )
 }
 
+
 function PostActions({ postText, setPostText, setCreatePost, fontSize, setFontSize }){
   const {mediaFiles, setMediaFiles} = useContext(MediaContext);
   const {postData, setPostData} = useContext(PostContext);
@@ -220,6 +221,7 @@ function PostActions({ postText, setPostText, setCreatePost, fontSize, setFontSi
   )
 }
 
+
 function AddMedia({ setMediaFiles }){
   const fileInput = useRef(null);
 
@@ -253,6 +255,7 @@ function AddMedia({ setMediaFiles }){
     </div>
   );
 }
+
 
 function AdjustFontsize({ fontSize, setFontSize }){
   const fontSizeField = useRef(null);
